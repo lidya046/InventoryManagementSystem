@@ -1,0 +1,12 @@
+@model Product
+@{ ViewData["Title"] = "Edit Produk"; }
+<div class="page-heading compact"><div><span class="page-eyebrow">PERBARUI DATA</span><h2>Edit Produk</h2><p>Ubah informasi produk tanpa memengaruhi riwayat transaksi.</p></div></div>
+<div class="panel-card form-page-card">
+<form asp-action="Edit">
+    <input type="hidden" asp-for="Id" /><input type="hidden" asp-for="Stock" />
+    <partial name="_Form" model="Model" />
+    <div class="info-callout"><i class="bi bi-info-circle-fill"></i><div><strong>Stok saat ini: @Model.Stock @Model.Unit</strong><span>Perubahan jumlah stok dilakukan melalui menu Transaksi Stok.</span></div></div>
+    <div class="form-actions"><a asp-action="Index" class="btn btn-light">Batal</a><button class="btn btn-primary btn-icon-label"><i class="bi bi-check-lg"></i> Simpan Perubahan</button></div>
+</form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

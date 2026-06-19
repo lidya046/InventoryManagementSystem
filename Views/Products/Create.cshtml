@@ -1,0 +1,10 @@
+@model Product
+@{ ViewData["Title"] = "Tambah Produk"; }
+<div class="page-heading compact"><div><span class="page-eyebrow">PRODUK BARU</span><h2>Tambah Produk</h2><p>Lengkapi informasi produk sebelum disimpan ke inventaris.</p></div></div>
+<div class="panel-card form-page-card">
+<form asp-action="Create">
+    <partial name="_Form" model="Model" />
+    <div class="form-actions"><a asp-action="Index" class="btn btn-light">Batal</a><button class="btn btn-primary btn-icon-label"><i class="bi bi-check-lg"></i> Simpan Produk</button></div>
+</form>
+</div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

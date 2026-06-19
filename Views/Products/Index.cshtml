@@ -1,0 +1,84 @@
+@model IEnumerable<Product>
+@{
+    ViewData["Title"] = "Produk";
+    var productCount = Model.Count();
+}
+
+<div class="page-heading">
+    <div>
+        <span class="page-eyebrow">KATALOG INVENTARIS</span>
+        <h2>Daftar Produk</h2>
+        <p>Kelola informasi, harga, dan kondisi stok seluruh produk.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary btn-icon-label"><i class="bi bi-plus-lg"></i> Tambah Produk</a>
+</div>
+
+<form method="get" class="filter-card mb-4">
+    <div class="row g-3 align-items-center">
+        <div class="col-lg-6">
+            <div class="input-icon"><i class="bi bi-search"></i><input name="search" value="@ViewBag.Search" class="form-control" placeholder="Cari kode atau nama produk..." /></div>
+        </div>
+        <div class="col-md-7 col-lg-4">
+            <div class="input-icon"><i class="bi bi-funnel"></i><select name="categoryId" asp-items="ViewBag.CategoryId" class="form-select"><option value="">Semua kategori</option></select></div>
+        </div>
+        <div class="col-md-5 col-lg-2 d-grid">
+            <button class="btn btn-dark btn-icon-label justify-content-center"><i class="bi bi-sliders"></i> Terapkan</button>
+        </div>
+    </div>
+</form>
+
+<div class="panel-card p-0 overflow-hidden">
+    <div class="table-toolbar">
+        <div><strong>@productCount Produk</strong><span>tersedia dalam katalog</span></div>
+        @if (!string.IsNullOrWhiteSpace(ViewBag.Search as string))
+        {
+            <a asp-action="Index" class="btn btn-sm btn-light"><i class="bi bi-x-lg"></i> Hapus filter</a>
+        }
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="empty-state">
+            <div class="empty-icon"><i class="bi bi-box2"></i></div>
+            <h4>Produk tidak ditemukan</h4>
+            <p>Tambahkan produk baru atau coba gunakan kata pencarian lain.</p>
+            <a asp-action="Create" class="btn btn-primary"><i class="bi bi-plus-lg"></i> Tambah Produk</a>
+        </div>
+    }
+    else
+    {
+        <div class="table-responsive modern-table-wrap">
+            <table class="table modern-table align-middle mb-0">
+                <thead><tr><th>Produk</th><th>Kategori</th><th>Harga Jual</th><th>Status Stok</th><th class="text-end">Aksi</th></tr></thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    var isEmpty = item.Stock == 0;
+                    var isLow = item.Stock > 0 && item.Stock <= item.MinimumStock;
+                    <tr>
+                        <td>
+                            <div class="product-cell">
+                                <span class="product-avatar"><i class="bi bi-box-seam"></i></span>
+                                <div><strong>@item.Name</strong><small>@item.Code · @item.Unit</small></div>
+                            </div>
+                        </td>
+                        <td><span class="category-chip"><i class="bi bi-tag"></i> @item.Category?.Name</span></td>
+                        <td><strong>Rp @item.SellingPrice.ToString("N0")</strong><small class="d-block text-muted">Beli Rp @item.PurchasePrice.ToString("N0")</small></td>
+                        <td>
+                            <div class="stock-status">
+                                <span class="status-dot @(isEmpty ? "empty" : isLow ? "low" : "healthy")"></span>
+                                <div><strong>@item.Stock @item.Unit</strong><small>@(isEmpty ? "Stok habis" : isLow ? "Perlu restok" : "Stok aman")</small></div>
+                            </div>
+                        </td>
+                        <td class="text-end text-nowrap">
+                            <a asp-controller="StockTransactions" asp-action="Create" asp-route-productId="@item.Id" class="action-btn success" title="Transaksi stok"><i class="bi bi-arrow-left-right"></i></a>
+                            <a asp-action="Details" asp-route-id="@item.Id" class="action-btn" title="Lihat detail"><i class="bi bi-eye"></i></a>
+                            <a asp-action="Edit" asp-route-id="@item.Id" class="action-btn primary" title="Edit produk"><i class="bi bi-pencil"></i></a>
+                            <a asp-action="Delete" asp-route-id="@item.Id" class="action-btn danger" title="Hapus produk"><i class="bi bi-trash3"></i></a>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,44 @@
+@model IEnumerable<StockTransaction>
+@{
+    ViewData["Title"] = "Transaksi Stok";
+}
+
+<div class="page-heading">
+    <div>
+        <span class="page-eyebrow">RIWAYAT PERGERAKAN BARANG</span>
+        <h2>Transaksi Stok</h2>
+        <p>Pantau seluruh aktivitas stok masuk dan stok keluar secara kronologis.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary btn-icon-label"><i class="bi bi-plus-lg"></i> Transaksi Baru</a>
+</div>
+
+<div class="panel-card p-0 overflow-hidden">
+    <div class="table-toolbar">
+        <div><strong>@Model.Count() Transaksi</strong><span>tercatat dalam sistem</span></div>
+        <span class="soft-badge"><i class="bi bi-clock-history"></i> Terbaru di atas</span>
+    </div>
+    @if (!Model.Any())
+    {
+        <div class="empty-state"><div class="empty-icon"><i class="bi bi-arrow-left-right"></i></div><h4>Belum ada transaksi</h4><p>Catat stok masuk atau keluar untuk melihat riwayatnya di sini.</p><a asp-action="Create" class="btn btn-primary">Buat Transaksi</a></div>
+    }
+    else
+    {
+        <div class="table-responsive modern-table-wrap">
+            <table class="table modern-table align-middle mb-0">
+                <thead><tr><th>Tanggal</th><th>Produk</th><th>Jenis Transaksi</th><th>Jumlah</th><th>Catatan</th></tr></thead>
+                <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td><div class="date-cell"><strong>@item.TransactionDate.ToString("dd MMM yyyy")</strong><small>@item.TransactionDate.ToString("HH:mm") WIB</small></div></td>
+                        <td><div class="product-cell"><span class="mini-avatar"><i class="bi bi-box"></i></span><div><strong>@item.Product?.Name</strong><small>@item.Product?.Code</small></div></div></td>
+                        <td><span class="transaction-badge @(item.Type == TransactionType.StockIn ? "stock-in" : "stock-out")"><i class="bi @(item.Type == TransactionType.StockIn ? "bi-arrow-down-left" : "bi-arrow-up-right")"></i>@(item.Type == TransactionType.StockIn ? "Stok Masuk" : "Stok Keluar")</span></td>
+                        <td><strong class="quantity-value @(item.Type == TransactionType.StockIn ? "positive" : "negative")">@(item.Type == TransactionType.StockIn ? "+" : "-")@item.Quantity</strong></td>
+                        <td><span class="note-text">@(string.IsNullOrWhiteSpace(item.Note) ? "—" : item.Note)</span></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

@@ -1,0 +1,5 @@
+@model Category
+@{ ViewData["Title"] = "Tambah Kategori"; }
+<div class="page-heading compact"><div><span class="page-eyebrow">KATEGORI BARU</span><h2>Tambah Kategori</h2><p>Buat kelompok baru untuk mengorganisasi produk.</p></div></div>
+<div class="panel-card form-page-card narrow-card"><form asp-action="Create"><partial name="_Form" model="Model" /><div class="form-actions"><a asp-action="Index" class="btn btn-light">Batal</a><button class="btn btn-primary btn-icon-label"><i class="bi bi-check-lg"></i> Simpan Kategori</button></div></form></div>
+@section Scripts { <partial name="_ValidationScriptsPartial" /> }

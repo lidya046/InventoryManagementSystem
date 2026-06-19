@@ -1,0 +1,23 @@
+@model Product
+<div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+<div class="form-section">
+    <div class="form-section-header"><span><i class="bi bi-info-circle-fill"></i></span><div><h4>Informasi Produk</h4><p>Masukkan identitas utama produk.</p></div></div>
+    <div class="row g-3">
+        <div class="col-md-4"><label asp-for="Code" class="form-label">Kode Produk</label><input asp-for="Code" class="form-control" placeholder="Contoh: ELC-001" /><span asp-validation-for="Code" class="text-danger"></span></div>
+        <div class="col-md-8"><label asp-for="Name" class="form-label">Nama Produk</label><input asp-for="Name" class="form-control" placeholder="Masukkan nama produk" /><span asp-validation-for="Name" class="text-danger"></span></div>
+        <div class="col-md-6"><label asp-for="CategoryId" class="form-label">Kategori</label><select asp-for="CategoryId" asp-items="ViewBag.CategoryId" class="form-select"><option value="">Pilih kategori</option></select><span asp-validation-for="CategoryId" class="text-danger"></span></div>
+        <div class="col-md-6"><label asp-for="Unit" class="form-label">Satuan</label><input asp-for="Unit" class="form-control" placeholder="pcs, unit, box, kg" /><span asp-validation-for="Unit" class="text-danger"></span></div>
+    </div>
+</div>
+<div class="form-section">
+    <div class="form-section-header"><span><i class="bi bi-cash-stack"></i></span><div><h4>Harga dan Persediaan</h4><p>Atur harga serta batas minimum stok.</p></div></div>
+    <div class="row g-3">
+        <div class="col-md-4"><label asp-for="PurchasePrice" class="form-label">Harga Beli</label><div class="input-group"><span class="input-group-text">Rp</span><input asp-for="PurchasePrice" class="form-control" /></div><span asp-validation-for="PurchasePrice" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="SellingPrice" class="form-label">Harga Jual</label><div class="input-group"><span class="input-group-text">Rp</span><input asp-for="SellingPrice" class="form-control" /></div><span asp-validation-for="SellingPrice" class="text-danger"></span></div>
+        <div class="col-md-4"><label asp-for="MinimumStock" class="form-label">Minimum Stok</label><input asp-for="MinimumStock" class="form-control" /><span asp-validation-for="MinimumStock" class="text-danger"></span></div>
+        @if (Model.Id == 0)
+        {
+            <div class="col-md-4"><label asp-for="Stock" class="form-label">Stok Awal</label><input asp-for="Stock" class="form-control" /><span asp-validation-for="Stock" class="text-danger"></span></div>
+        }
+    </div>
+</div>

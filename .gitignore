@@ -1,0 +1,17 @@
+# Hasil build .NET
+bin/
+obj/
+
+# Visual Studio dan VS Code
+.vs/
+.vscode/
+*.user
+*.suo
+
+# Database lokal SQLite
+inventory.db
+*.db-shm
+*.db-wal
+
+# File environment dan rahasia
+.env

@@ -1,0 +1,3 @@
+@model Category
+@{ ViewData["Title"] = "Hapus Kategori"; }
+<div class="confirm-card"><div class="confirm-icon danger"><i class="bi bi-trash3-fill"></i></div><span class="page-eyebrow">KONFIRMASI PENGHAPUSAN</span><h2>Hapus kategori?</h2><p>Kategori <strong>@Model.Name</strong> akan dihapus permanen selama belum digunakan oleh produk.</p><form asp-action="Delete"><input type="hidden" asp-for="Id" /><div class="d-flex justify-content-center gap-2"><a asp-action="Index" class="btn btn-light">Batal</a><button class="btn btn-danger btn-icon-label"><i class="bi bi-trash3"></i> Ya, Hapus Kategori</button></div></form></div>

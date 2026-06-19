@@ -1,0 +1,51 @@
+@model IEnumerable<Category>
+@{
+    ViewData["Title"] = "Kategori";
+}
+
+<div class="page-heading">
+    <div>
+        <span class="page-eyebrow">PENGELOMPOKAN PRODUK</span>
+        <h2>Kategori Produk</h2>
+        <p>Susun produk ke dalam kategori agar pencarian dan pengelolaan lebih mudah.</p>
+    </div>
+    <a asp-action="Create" class="btn btn-primary btn-icon-label"><i class="bi bi-plus-lg"></i> Tambah Kategori</a>
+</div>
+
+@if (!Model.Any())
+{
+    <div class="panel-card empty-state">
+        <div class="empty-icon"><i class="bi bi-tags"></i></div>
+        <h4>Belum ada kategori</h4>
+        <p>Buat kategori pertama untuk mulai mengelompokkan produk.</p>
+        <a asp-action="Create" class="btn btn-primary">Tambah Kategori</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        @foreach (var item in Model)
+        {
+            <div class="col-md-6 col-xl-4">
+                <article class="category-card h-100">
+                    <div class="category-card-top">
+                        <div class="category-icon"><i class="bi bi-tag-fill"></i></div>
+                        <div class="dropdown">
+                            <button class="action-btn border-0" data-bs-toggle="dropdown" aria-expanded="false"><i class="bi bi-three-dots"></i></button>
+                            <ul class="dropdown-menu dropdown-menu-end shadow border-0">
+                                <li><a class="dropdown-item" asp-action="Edit" asp-route-id="@item.Id"><i class="bi bi-pencil me-2"></i>Edit</a></li>
+                                <li><a class="dropdown-item text-danger" asp-action="Delete" asp-route-id="@item.Id"><i class="bi bi-trash3 me-2"></i>Hapus</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                    <h3>@item.Name</h3>
+                    <p>@(string.IsNullOrWhiteSpace(item.Description) ? "Belum ada deskripsi untuk kategori ini." : item.Description)</p>
+                    <div class="category-card-footer">
+                        <span><i class="bi bi-box2"></i> @item.Products.Count produk</span>
+                        <a asp-controller="Products" asp-action="Index" asp-route-categoryId="@item.Id">Lihat produk <i class="bi bi-arrow-right"></i></a>
+                    </div>
+                </article>
+            </div>
+        }
+    </div>
+}

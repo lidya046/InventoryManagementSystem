@@ -1,0 +1,169 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<section class="hero-card mb-4">
+    <div class="hero-pattern"></div>
+    <div class="hero-content">
+        <span class="hero-badge"><i class="bi bi-stars"></i> Ringkasan hari ini</span>
+        <h2>Kelola inventaris tanpa ribet.</h2>
+        <p>Lihat kondisi stok, nilai persediaan, dan aktivitas terbaru secara cepat dari satu dashboard.</p>
+        <div class="d-flex flex-wrap gap-2">
+            <a asp-controller="Products" asp-action="Create" class="btn btn-light btn-icon-label">
+                <i class="bi bi-plus-circle-fill"></i> Tambah Produk
+            </a>
+            <a asp-controller="StockTransactions" asp-action="Create" class="btn btn-hero-secondary btn-icon-label">
+                <i class="bi bi-arrow-left-right"></i> Catat Transaksi
+            </a>
+        </div>
+    </div>
+    <div class="hero-illustration d-none d-lg-flex">
+        <div class="floating-box box-one"><i class="bi bi-box-seam"></i></div>
+        <div class="floating-box box-two"><i class="bi bi-bar-chart-fill"></i></div>
+        <div class="hero-orb"><i class="bi bi-boxes"></i></div>
+    </div>
+</section>
+
+<div class="row g-3 mb-4">
+    <div class="col-sm-6 col-xl-3">
+        <div class="metric-card metric-purple">
+            <div class="metric-icon"><i class="bi bi-box2-fill"></i></div>
+            <div class="metric-content"><span>Total Produk</span><strong>@Model.TotalProducts</strong><small>Produk terdaftar</small></div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="metric-card metric-blue">
+            <div class="metric-icon"><i class="bi bi-tags-fill"></i></div>
+            <div class="metric-content"><span>Kategori</span><strong>@Model.TotalCategories</strong><small>Kelompok produk</small></div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="metric-card metric-green">
+            <div class="metric-icon"><i class="bi bi-stack"></i></div>
+            <div class="metric-content"><span>Total Stok</span><strong>@Model.TotalStock</strong><small>Seluruh unit tersedia</small></div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="metric-card metric-orange">
+            <div class="metric-icon"><i class="bi bi-wallet2"></i></div>
+            <div class="metric-content"><span>Nilai Persediaan</span><strong class="metric-money">Rp @Model.InventoryValue.ToString("N0")</strong><small>Potensi laba Rp @Model.PotentialProfit.ToString("N0")</small></div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-xl-4">
+        <div class="panel-card h-100">
+            <div class="panel-header">
+                <div><span class="panel-eyebrow">ANALISIS</span><h3>Kesehatan Stok</h3></div>
+                <span class="icon-button"><i class="bi bi-pie-chart-fill"></i></span>
+            </div>
+            <div class="stock-chart-wrap">
+                <canvas id="stockHealthChart" aria-label="Grafik kesehatan stok"></canvas>
+                <div class="chart-center"><strong>@Model.TotalProducts</strong><span>Produk</span></div>
+            </div>
+            <div class="stock-legend">
+                <div><span class="legend-dot healthy"></span><span>Stok Aman</span><strong>@Model.HealthyStockCount</strong></div>
+                <div><span class="legend-dot low"></span><span>Stok Menipis</span><strong>@Model.LowStockCount</strong></div>
+                <div><span class="legend-dot empty"></span><span>Stok Habis</span><strong>@Model.OutOfStockCount</strong></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-xl-8">
+        <div class="panel-card h-100">
+            <div class="panel-header">
+                <div><span class="panel-eyebrow">PERLU PERHATIAN</span><h3>Peringatan Stok</h3></div>
+                <a asp-controller="Products" asp-action="Index" class="text-link">Lihat semua <i class="bi bi-arrow-right"></i></a>
+            </div>
+            @if (Model.LowStockProducts.Count == 0)
+            {
+                <div class="empty-state compact">
+                    <div class="empty-icon success"><i class="bi bi-check2-circle"></i></div>
+                    <h4>Semua stok aman</h4>
+                    <p>Tidak ada produk yang berada di bawah batas minimum.</p>
+                </div>
+            }
+            else
+            {
+                <div class="low-stock-list">
+                    @foreach (var item in Model.LowStockProducts)
+                    {
+                        var percentage = item.MinimumStock > 0 ? Math.Min(100, (int)Math.Round((double)item.Stock / item.MinimumStock * 100)) : 100;
+                        <div class="stock-item">
+                            <div class="product-avatar"><i class="bi bi-box-seam"></i></div>
+                            <div class="stock-item-main">
+                                <div class="d-flex justify-content-between gap-3">
+                                    <div><strong>@item.Name</strong><small>@item.Code</small></div>
+                                    <span class="stock-pill @(item.Stock == 0 ? "danger" : "warning")">@item.Stock @item.Unit</span>
+                                </div>
+                                <div class="progress stock-progress" role="progressbar" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100">
+                                    <div class="progress-bar @(item.Stock == 0 ? "bg-danger" : "bg-warning")" style="width:@percentage%"></div>
+                                </div>
+                            </div>
+                            <a asp-controller="StockTransactions" asp-action="Create" asp-route-productId="@item.Id" class="btn btn-sm btn-soft-primary">Restok</a>
+                        </div>
+                    }
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<div class="panel-card">
+    <div class="panel-header">
+        <div><span class="panel-eyebrow">AKTIVITAS</span><h3>Transaksi Terbaru</h3></div>
+        <a asp-controller="StockTransactions" asp-action="Index" class="text-link">Riwayat lengkap <i class="bi bi-arrow-right"></i></a>
+    </div>
+    @if (Model.RecentTransactions.Count == 0)
+    {
+        <div class="empty-state compact"><div class="empty-icon"><i class="bi bi-receipt"></i></div><h4>Belum ada transaksi</h4><p>Transaksi stok masuk dan keluar akan tampil di sini.</p></div>
+    }
+    else
+    {
+        <div class="table-responsive modern-table-wrap">
+            <table class="table modern-table align-middle mb-0">
+                <thead><tr><th>Waktu</th><th>Produk</th><th>Jenis</th><th class="text-end">Jumlah</th></tr></thead>
+                <tbody>
+                @foreach (var item in Model.RecentTransactions)
+                {
+                    <tr>
+                        <td><div class="date-cell"><strong>@item.TransactionDate.ToString("dd MMM yyyy")</strong><small>@item.TransactionDate.ToString("HH:mm")</small></div></td>
+                        <td><div class="product-cell"><span class="mini-avatar"><i class="bi bi-box"></i></span><div><strong>@item.Product?.Name</strong><small>@item.Product?.Code</small></div></div></td>
+                        <td><span class="transaction-badge @(item.Type == TransactionType.StockIn ? "stock-in" : "stock-out")"><i class="bi @(item.Type == TransactionType.StockIn ? "bi-arrow-down-left" : "bi-arrow-up-right")"></i>@(item.Type == TransactionType.StockIn ? "Stok Masuk" : "Stok Keluar")</span></td>
+                        <td class="text-end fw-bold">@item.Quantity</td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
+
+@section Scripts {
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.9/dist/chart.umd.min.js"></script>
+<script>
+    const chartCanvas = document.getElementById('stockHealthChart');
+    if (chartCanvas) {
+        new Chart(chartCanvas, {
+            type: 'doughnut',
+            data: {
+                labels: ['Stok Aman', 'Stok Menipis', 'Stok Habis'],
+                datasets: [{
+                    data: [@Model.HealthyStockCount, @Model.LowStockCount, @Model.OutOfStockCount],
+                    backgroundColor: ['#22c55e', '#f59e0b', '#ef4444'],
+                    borderWidth: 0,
+                    hoverOffset: 5
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '76%',
+                plugins: { legend: { display: false }, tooltip: { displayColors: false } }
+            }
+        });
+    }
+</script>
+}
